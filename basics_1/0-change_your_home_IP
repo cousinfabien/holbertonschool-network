@@ -1,14 +1,23 @@
 #!/usr/bin/env bash
-# Ce script configure le fichier /etc/hosts pour rediriger localhost et facebook.com
+# Ce script configure le fichier /etc/hosts pour rediriger localhost et facebook.com sans planter sur Docker
 
-# Modifier la ligne existante de localhost (remplace 127.0.0.1 par 127.0.0.2)
-sed -i 's/127.0.0.1\tlocalhost/127.0.0.2\tlocalhost/g' /etc/hosts
-sed -i 's/127.0.0.1 localhost/127.0.0.2 localhost/g' /etc/hosts
+# 1. On copie le fichier /etc/hosts actuel dans un fichier temporaire
+cp /etc/hosts /tmp/hosts.tmp
 
-# Ajouter la redirection pour facebook.com si elle n'existe pas déjà
-if ! grep -q "facebook.com" /etc/hosts; then
-    echo -e "8.8.8.8\tfacebook.com" >> /etc/hosts
+# 2. On fait les modifications avec sed dans notre fichier temporaire (ici pas de blocage Docker)
+sed -i 's/127.0.0.1\tlocalhost/127.0.0.2\tlocalhost/g' /tmp/hosts.tmp
+sed -i 's/127.0.0.1 localhost/127.0.0.2 localhost/g' /tmp/hosts.tmp
+
+# 3. Si facebook.com n'est pas déjà présent, on l'ajoute au fichier temporaire
+if ! grep -q "facebook.com" /tmp/hosts.tmp; then
+    echo -e "8.8.8.8\tfacebook.com" >> /tmp/hosts.tmp
 else
-    # Si facebook.com y est déjà, on met à jour son IP vers 8.8.8.8
-    sed -i 's/.*facebook.com/8.8.8.8\tfacebook.com/g' /etc/hosts
+    # S'il y est, on met à jour son IP
+    sed -i 's/.*facebook.com/8.8.8.8\tfacebook.com/g' /tmp/hosts.tmp
 fi
+
+# 4. On écrase proprement le vrai /etc/hosts avec le contenu modifié
+cat /tmp/hosts.tmp > /etc/hosts
+
+# 5. Nettoyage du fichier temporaire
+rm /tmp/hosts.tmp
