@@ -1,4 +1,4 @@
 #!/usr/bin/env bash
-# Ce script extrait et affiche toutes les adresses IPv4 actives de la machine
+# Ce script extrait et affiche toutes les adresses IPv4 actives en utilisant ifconfig
 
-ip -4 addr show | grep -oP '(?<=inet\s)\d+(\.\d+){3}'
+ifconfig | grep -oP '(?<=inet\s)\d+(\.\d+){3}'
