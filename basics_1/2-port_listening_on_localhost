@@ -1,0 +1,4 @@
+#!/usr/bin/env bash
+# Ce script ouvre une écoute réseau sur le port 98 de la machine locale
+
+nc -l 98
