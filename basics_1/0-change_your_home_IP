@@ -1,0 +1,14 @@
+#!/usr/bin/env bash
+# Ce script configure le fichier /etc/hosts pour rediriger localhost et facebook.com
+
+# Modifier la ligne existante de localhost (remplace 127.0.0.1 par 127.0.0.2)
+sed -i 's/127.0.0.1\tlocalhost/127.0.0.2\tlocalhost/g' /etc/hosts
+sed -i 's/127.0.0.1 localhost/127.0.0.2 localhost/g' /etc/hosts
+
+# Ajouter la redirection pour facebook.com si elle n'existe pas déjà
+if ! grep -q "facebook.com" /etc/hosts; then
+    echo -e "8.8.8.8\tfacebook.com" >> /etc/hosts
+else
+    # Si facebook.com y est déjà, on met à jour son IP vers 8.8.8.8
+    sed -i 's/.*facebook.com/8.8.8.8\tfacebook.com/g' /etc/hosts
+fi
